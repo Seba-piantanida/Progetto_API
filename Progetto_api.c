@@ -5,27 +5,44 @@
 #define true 1
 #define false 0
 
+#define MAXINT 2147483647
+
+int dimPercorso = MAXINT;
 char stringa[20];
 /*get_charunlocked più veloce di get char va bene se non ci sono thread*/
 
-typedef struct StazioneServizio {
+typedef struct Auto{
+    unsigned int autonomia;
+    struct Auto* next;
+} Auto;
+
+typedef struct Stazione {
     unsigned int distanza;
-    struct StazioneServizio* precedente;
-    struct StazioneServizio* successivo;
-} StazioneServizio;
+    struct Auto* veicoli;
+    struct Stazione* ragDX;
+    struct Stazione* ragSX;
+    struct Stazione* precedente;
+    struct Stazione* successivo;
+} Stazione;
 
-StazioneServizio* testa;
-StazioneServizio* coda;
+typedef struct Percorso {
+    unsigned int distanza;
+    struct Percorso* next;
+} Percorso;
 
-StazioneServizio * creaStazione(unsigned int distanza, int a){
-    StazioneServizio* nuova_stazione = malloc(sizeof(StazioneServizio));
+
+Stazione* testa = NULL;
+Stazione* coda = NULL;
+
+Stazione * creaStazione(unsigned int distanza, int a){
+    Stazione* nuova_stazione = malloc(sizeof(Stazione));
     nuova_stazione->distanza = distanza;
     nuova_stazione->precedente = NULL;
     nuova_stazione->successivo = NULL;
     return nuova_stazione;
 }
 
-void aggiungiStazione(StazioneServizio* stazione){
+void aggiungiStazione(Stazione* stazione){
     if (stazione->distanza > (coda->distanza) / 2){
         /*aggiungi dal fondo*/
     }
@@ -58,6 +75,19 @@ int main(){
     {
         if(strcmp(stringa, "aggiungi-stazione "))
         {
+            int distanza;
+            int macchine[10], i = 0;
+            char temp;
+
+            scanf("%d", &distanza);
+            do
+            {
+                scanf("%d%c", &macchine[i], &temp);
+                i ++;
+            } while (temp != '\n');
+            
+            
+
 
         }
         else if (strcmp(stringa, "demolisci-stazione "))
@@ -72,15 +102,16 @@ int main(){
         }
         else if (strcmp(stringa, "rottama-auto "))
         {
-
+            scanf("%d %d", &stazione, &autonomia);
+            rottamaAuto(stazione, autonomia);
         }
         else if (strcmp(stringa, "pianifica-percorso "))
         {
-            /* code */
+            
         }
         else
         {
-            return;
+            return 0;
         }
         
     }
