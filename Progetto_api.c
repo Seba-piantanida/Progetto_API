@@ -19,17 +19,35 @@ typedef struct Auto{
 typedef struct Stazione {
     unsigned int distanza;
     struct Auto* veicoli;
-    struct Stazione* ragDX;
-    struct Stazione* ragSX;
     struct Stazione* precedente;
     struct Stazione* successivo;
 } Stazione;
 
 typedef struct Percorso {
     unsigned int distanza;
+    unsigned int profondita;
     struct Percorso* next;
 } Percorso;
 
+void stampaPercorso(Percorso* percorso){
+    Percorso* prev = percorso;
+    while (percorso != NULL)
+    {
+        printf("%d ", percorso->distanza);
+        prev = percorso;
+        percorso = percorso->next;
+        free(prev);
+    }
+    
+}
+
+Percorso* creaNodoPercorso(unsigned int distanza, unsigned int profondita){
+    Percorso* nuovoNodo = malloc(sizeof(Percorso));
+    nuovoNodo->distanza = distanza;
+    nuovoNodo->profondita = profondita;
+    nuovoNodo->next = NULL;
+    return nuovoNodo;
+}
 
 Stazione* testa = NULL;
 Stazione* coda = NULL;
@@ -48,6 +66,23 @@ Auto* creaAuto(unsigned int autonomia){
     nuova_auto -> autonomia = autonomia;
     nuova_auto -> next = NULL;
     return nuova_auto;
+}
+
+Auto* creaListaAuto(Auto* lista, int autonomia){
+    Auto* nuova_auto = creaAuto(autonomia);
+    if (lista == NULL || lista->autonomia < autonomia){
+        nuova_auto -> next = lista;
+        return nuova_auto;
+    }
+
+    Auto* curr = lista;
+    while (curr -> next != NULL && curr->next->autonomia > autonomia)
+    {
+        curr = curr ->next;
+    }
+    nuova_auto -> next = curr->next;
+    curr->next = nuova_auto;
+    return lista;
 }
 
 void cancellaListaAuto(Auto* lista){
@@ -102,7 +137,7 @@ void aggiungiStazione(Stazione* stazione){
 
 int demolisciStazione(unsigned int distanza){
      if (testa == NULL) {
-        return;
+        return false;
     }
 
     Stazione* curr = testa;
@@ -124,50 +159,100 @@ int demolisciStazione(unsigned int distanza){
             }
             cancellaListaAuto(curr->veicoli);
             free(curr);
-            return;
+            return true;
         }
         curr = curr->successivo;
     }
+    return false;
 
    
 }
 
 void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
+    Stazione* curr = testa;
+    while (curr != NULL){
+        if (curr->distanza == stazione){
+            Auto* prev = NULL;
+            Auto* temp = curr->veicoli;
+            while (temp->autonomia > autonomia && temp != NULL)
+            {
+                prev = temp;
+                temp = temp->next; 
+            }
+            if (temp->next->autonomia == autonomia){
+                printf("non aggiunta");
+                return;
+            }
+            Auto* nuova_auto = creaAuto(autonomia);
+            if (prev == NULL){
+                nuova_auto->next = temp;
+                curr->veicoli = nuova_auto;
+                printf("aggiunta");
+                return;
+            }
+            prev->next = nuova_auto;
+            nuova_auto->next = temp;
+            printf("aggiunta");
+            return;
+        }
+    }
+    printf("non aggiunta");
+    return;
 
 }
 
 int rottamaAuto(unsigned int stazione, unsigned int autonomia){
-    Stazione* temp = testa;
-    for(;temp->successivo != NULL; temp = temp->successivo){
-        if (temp->distanza = stazione){
-            /*rimuovi auto*/
-            return true;
+    Stazione* curr = testa;
+    if (testa == NULL){
+        return false;
+    }
+    while (curr != NULL)
+    {
+        if (curr->distanza == stazione){
+            Auto* temp = curr->veicoli;
+            if (temp == NULL){
+                return NULL;
+            }
+            if (temp->autonomia == autonomia){
+                curr->veicoli = curr->veicoli->next;
+                free(temp);
+                return true;
+            }
+            Auto* prev = NULL;
+            while (temp != NULL){
+                if (temp->autonomia == autonomia){
+                    prev->next = temp->next;
+                    free(temp);
+                    return true;
+                }
+                prev = temp;
+                temp = temp->next;
+            }
         }
+        curr = curr->successivo;
     }
     return false;
 
 }
 
-void pianificaPercorso(unsigned int partenza, unsigned int arrivo){
-
-}
-
-Auto* creaListaAuto(Auto* lista, int autonomia){
-    Auto* nuova_auto = creaAuto(autonomia);
-    if (lista == NULL || lista->autonomia < autonomia){
-        nuova_auto -> next = lista;
-        return nuova_auto;
-    }
-
-    Auto* curr = lista;
-    while (curr -> next != NULL && curr->next->autonomia > autonomia)
+Percorso* pianificaPercorso(Stazione* partenza, unsigned int arrivo){
+    Stazione* start = partenza;
+    Percorso* percorso = NULL;
+    unsigned int profondita = MAXINT;
+    while ((start->distanza - partenza->distanza) <= partenza->veicoli->autonomia && start != NULL)
     {
-        curr = curr ->next;
+        if(start->distanza == arrivo){
+            /*trovato arrivo*/
+            return creaNodoPercorso(partenza->distanza, 0);
+
+        }
+        
+        start = start->successivo;
     }
-    nuova_auto -> next = curr->next;
-    curr->next = nuova_auto;
-    return lista;
+    
+
 }
+
 
 int main(){
     unsigned int stazione;
@@ -222,7 +307,24 @@ int main(){
 
         else if (strcmp(stringa, "pianifica-percorso "))
         {
+            unsigned int partenza, arrivo;
+            scanf("%d %d", &partenza, &arrivo);
+            if(arrivo == partenza){
+                /*percorso immediato*/
+            }else if (partenza < arrivo)
+            {
+                Percorso* percorso = pianificaPercorso(partenza, arrivo);
+                if (percorso != NULL){
+                    printf("percorso trovato: ");
+                    stampaPercorso(percorso);
+                }else
+                {
+                    printf("percorso non trovato");
+                }
+                
+            }
             
+
         }
         else
         {
