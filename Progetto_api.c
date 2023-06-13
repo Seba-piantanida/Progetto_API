@@ -211,7 +211,7 @@ int rottamaAuto(unsigned int stazione, unsigned int autonomia){
         if (curr->distanza == stazione){
             Auto* temp = curr->veicoli;
             if (temp == NULL){
-                return NULL;
+                return false;
             }
             if (temp->autonomia == autonomia){
                 curr->veicoli = curr->veicoli->next;
@@ -235,20 +235,44 @@ int rottamaAuto(unsigned int stazione, unsigned int autonomia){
 
 }
 
-Percorso* pianificaPercorso(Stazione* partenza, unsigned int arrivo){
-    Stazione* start = partenza;
-    Percorso* percorso = NULL;
-    unsigned int profondita = MAXINT;
-    while ((start->distanza - partenza->distanza) <= partenza->veicoli->autonomia && start != NULL)
-    {
-        if(start->distanza == arrivo){
+Percorso* pianificaPercorso(Stazione* partenza, unsigned int arrivo, int index){
+    if(index >= dimPercorso){
+        return NULL;
+    }
+    if((partenza->distanza + partenza->veicoli->autonomia) >= arrivo){
             /*trovato arrivo*/
+            dimPercorso = index;
             return creaNodoPercorso(partenza->distanza, 0);
 
         }
+    Stazione* start = partenza;
+    Percorso* percorso = NULL;
+    unsigned int profondita = MAXINT;
+    while (start != NULL)
+    {
         
+        Percorso* temp = pianificaPercorso(start, arrivo, index + 1);
+        if (temp != NULL && temp->profondita < profondita){
+            profondita = temp->profondita;
+            Percorso* nuovoNodo = creaNodoPercorso(partenza->distanza, profondita +1);
+            nuovoNodo->next = temp;
+            if (percorso == NULL){
+                percorso = nuovoNodo;
+            }else{
+                Percorso* prev = percorso;
+                temp = percorso;
+                while (temp != NULL){
+                    prev = temp;
+                    temp = temp->next;
+                    free(prev);
+                }
+                percorso = nuovoNodo;
+            }
+        }
+
         start = start->successivo;
     }
+    return percorso;
     
 
 }
@@ -268,7 +292,7 @@ int main(){
             scanf("%d%c", &distanza, &temp);
             Stazione* nuova_stazione = creaStazione(distanza);
             Auto* primaAuto = NULL;
-            if (temp != "\n"){
+            if (temp != '\n'){
 
                     do{
                         scanf("%d%c", &macchina, &temp);
@@ -313,18 +337,27 @@ int main(){
                 /*percorso immediato*/
             }else if (partenza < arrivo)
             {
-                Percorso* percorso = pianificaPercorso(partenza, arrivo);
-                if (percorso != NULL){
-                    printf("percorso trovato: ");
-                    stampaPercorso(percorso);
-                }else
+                Stazione* start = testa;
+                while (start->distanza != partenza && start != NULL)
                 {
-                    printf("percorso non trovato");
+                    start = start->successivo;
                 }
+                if (start == NULL){
+                    printf("percorso non trovato");
+                }else{
                 
+                    Percorso* percorso = pianificaPercorso(start, arrivo, 0);
+                    if (percorso != NULL){
+                        printf("percorso trovato: ");
+                        stampaPercorso(percorso);
+                    }else
+                    {
+                        printf("percorso non trovato");
+                    }
+                }
             }
             
-
+            dimPercorso = MAXINT;
         }
         else
         {
