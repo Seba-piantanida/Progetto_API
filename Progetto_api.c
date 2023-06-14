@@ -180,23 +180,23 @@ void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
                 temp = temp->next; 
             }
             if (temp->next->autonomia == autonomia){
-                printf("non aggiunta");
+                printf("non aggiunta\n");
                 return;
             }
             Auto* nuova_auto = creaAuto(autonomia);
             if (prev == NULL){
                 nuova_auto->next = temp;
                 curr->veicoli = nuova_auto;
-                printf("aggiunta");
+                printf("aggiunta\n");
                 return;
             }
             prev->next = nuova_auto;
             nuova_auto->next = temp;
-            printf("aggiunta");
+            printf("aggiunta\n");
             return;
         }
     }
-    printf("non aggiunta");
+    printf("non aggiunta\n");
     return;
 
 }
