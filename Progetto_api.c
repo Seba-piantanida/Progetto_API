@@ -317,14 +317,13 @@ int main(){
         if(!strcmp(stringa, "aggiungi-stazione"))
         {
             int distanza;
-            int macchina, i = 0;
+            int macchina;
             char temp;
 
             scanf(" %d%c", &distanza, &temp);
             Stazione* nuova_stazione = creaStazione(distanza);
             Auto* primaAuto = NULL;
             if (temp != '\n'){
-
                     do{
                         scanf("%d%c", &macchina, &temp);
                         primaAuto = creaListaAuto(primaAuto, macchina);
