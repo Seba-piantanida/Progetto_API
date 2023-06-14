@@ -8,7 +8,7 @@
 #define MAXINT 2147483647
 
 int dimPercorso = MAXINT;
-char stringa[20];
+
 /*get_charunlocked più veloce di get char va bene se non ci sono thread*/
 
 typedef struct Auto{
@@ -30,11 +30,11 @@ typedef struct Percorso {
 } Percorso;
 
 void stampaPercorso(Percorso* percorso){
-    Percorso* prev = percorso;
+    
     while (percorso != NULL)
     {
         printf("%d ", percorso->distanza);
-        prev = percorso;
+        Percorso* prev = percorso;
         percorso = percorso->next;
         free(prev);
     }
@@ -107,14 +107,14 @@ void aggiungiStazione(Stazione* stazione){
             curr = curr->precedente;
         }
         if (curr->precedente->distanza == stazione->distanza){
-            printf("non aggiunta");
+            printf("non aggiunta\n");
             return;
         }
         stazione->precedente = curr->precedente;
         stazione->successivo = curr;
         curr->precedente = stazione;
         stazione->precedente->successivo = stazione;
-        printf("aggiunta");
+        printf("aggiunta\n");
         /*aggiungi dal fondo*/
     }
     else{
@@ -123,14 +123,14 @@ void aggiungiStazione(Stazione* stazione){
             curr = curr->successivo;
         }
         if (curr->successivo->distanza == stazione->distanza){
-            printf("non aggiunta");
+            printf("non aggiunta\n");
             return;
         }
         stazione ->successivo = curr->successivo;
         stazione->precedente = curr;
         curr->successivo = stazione;
         stazione->successivo->precedente = stazione;
-        printf("aggiunta");
+        printf("aggiunta\n");
         /*aggiungi dalla testa*/
     }
 }
@@ -281,15 +281,16 @@ Percorso* pianificaPercorso(Stazione* partenza, unsigned int arrivo, int index){
 int main(){
     unsigned int stazione;
     unsigned int autonomia;
-    while (scanf("%s ", stringa) != EOF)
+    char stringa[20];
+    while (scanf("%19s", stringa) != EOF)
     {
-        if(strcmp(stringa, "aggiungi-stazione "))
+        if(!strcmp(stringa, "aggiungi-stazione"))
         {
             int distanza;
             int macchina, i = 0;
             char temp;
 
-            scanf("%d%c", &distanza, &temp);
+            scanf(" %d%c", &distanza, &temp);
             Stazione* nuova_stazione = creaStazione(distanza);
             Auto* primaAuto = NULL;
             if (temp != '\n'){
@@ -303,33 +304,33 @@ int main(){
             aggiungiStazione(nuova_stazione);
 
         }
-        else if (strcmp(stringa, "demolisci-stazione "))
+        else if (!strcmp(stringa, "demolisci-stazione"))
         {
-            scanf("%d", &stazione);
+            scanf(" %d", &stazione);
             if (demolisciStazione(stazione)){
-                printf("demolita");
+                printf("demolita\n");
             }else{
-                printf("non demolita");
+                printf("non demolita\n");
             }
         }
 
-        else if (strcmp(stringa, "aggiungi-auto "))
+        else if (!strcmp(stringa, "aggiungi-auto"))
         {
             scanf("%d %d", &stazione, &autonomia);
             aggiungiAuto(stazione, autonomia);
         }
 
-        else if (strcmp(stringa, "rottama-auto "))
+        else if (!strcmp(stringa, "rottama-auto"))
         {
             scanf("%d %d", &stazione, &autonomia);
             if (rottamaAuto(stazione, autonomia)){
-                printf("rottamata");
+                printf("rottamata\n");
             }else{
-                printf("non rottamata");
+                printf("non rottamata\n");
             }
         }
 
-        else if (strcmp(stringa, "pianifica-percorso "))
+        else if (!strcmp(stringa, "pianifica-percorso"))
         {
             unsigned int partenza, arrivo;
             scanf("%d %d", &partenza, &arrivo);
@@ -343,7 +344,7 @@ int main(){
                     start = start->successivo;
                 }
                 if (start == NULL){
-                    printf("percorso non trovato");
+                    printf("percorso non trovato\n");
                 }else{
                 
                     Percorso* percorso = pianificaPercorso(start, arrivo, 0);
@@ -352,7 +353,7 @@ int main(){
                         stampaPercorso(percorso);
                     }else
                     {
-                        printf("percorso non trovato");
+                        printf("percorso non trovato\n");
                     }
                 }
             }
