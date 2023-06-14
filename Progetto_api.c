@@ -9,7 +9,6 @@
 
 int dimPercorso = MAXINT;
 
-/*get_charunlocked più veloce di get char va bene se non ci sono thread*/
 
 typedef struct Auto{
     unsigned int autonomia;
@@ -111,6 +110,7 @@ void aggiungiStazione(Stazione* stazione){
         if (curr != NULL && curr->distanza == stazione->distanza){
             printf("non aggiunta\n");
             return;
+
         }
         if (curr == NULL){
             testa->precedente = stazione;
