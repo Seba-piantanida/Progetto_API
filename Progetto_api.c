@@ -98,38 +98,60 @@ void aggiungiStazione(Stazione* stazione){
     if (testa == NULL){
         testa = stazione;
         coda = stazione;
+        printf("aggiunta\n");
         return;
     }
     Stazione* curr;
     if (stazione->distanza > (coda->distanza) / 2){
         curr = coda;
-        while (curr ->precedente != NULL && curr->precedente->distanza > stazione->distanza){
+        while (curr  != NULL && curr->distanza > stazione->distanza){
             curr = curr->precedente;
         }
-        if (curr->precedente->distanza == stazione->distanza){
+        
+        if (curr != NULL && curr->distanza == stazione->distanza){
             printf("non aggiunta\n");
             return;
         }
-        stazione->precedente = curr->precedente;
-        stazione->successivo = curr;
-        curr->precedente = stazione;
-        stazione->precedente->successivo = stazione;
+        if (curr == NULL){
+            testa->precedente = stazione;
+            stazione->successivo = testa;
+            testa = stazione;
+            printf("aggiunta\n");
+            return;
+        }
+        if (coda == curr){
+            coda = stazione;
+        }
+        stazione->successivo = curr->successivo;
+        curr->successivo = stazione;
+        stazione->precedente = curr;
+
         printf("aggiunta\n");
         /*aggiungi dal fondo*/
     }
     else{
         curr = testa;
-        while (curr ->successivo != NULL && curr->successivo->distanza < stazione->distanza){
+        while (curr  != NULL && curr->distanza < stazione->distanza){
             curr = curr->successivo;
         }
-        if (curr->successivo->distanza == stazione->distanza){
+        if (curr != NULL && curr->distanza == stazione->distanza){
             printf("non aggiunta\n");
             return;
         }
-        stazione ->successivo = curr->successivo;
-        stazione->precedente = curr;
-        curr->successivo = stazione;
-        stazione->successivo->precedente = stazione;
+        if (curr == NULL){
+            coda->successivo = stazione;
+            stazione->precedente = coda;
+            coda = stazione;
+            printf("aggiunta");
+            return;
+        }
+        if (testa == curr){
+            testa = stazione;
+        }
+        stazione->precedente = curr->precedente;
+        curr->precedente = stazione;
+        stazione->successivo curr;
+        
         printf("aggiunta\n");
         /*aggiungi dalla testa*/
     }
@@ -174,10 +196,18 @@ void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
         if (curr->distanza == stazione){
             Auto* prev = NULL;
             Auto* temp = curr->veicoli;
-            while (temp->autonomia > autonomia && temp != NULL)
+
+
+            while (temp != NULL && temp->autonomia > autonomia)
             {
                 prev = temp;
                 temp = temp->next; 
+            }
+            if (temp == NULL){
+                Auto* nuova_auto = creaAuto(autonomia);
+                curr->veicoli = nuova_auto;
+                printf("aggiunta\n");
+                return;
             }
             if (temp->next->autonomia == autonomia){
                 printf("non aggiunta\n");
