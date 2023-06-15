@@ -121,10 +121,16 @@ void aggiungiStazione(Stazione* stazione){
         }
         if (coda == curr){
             coda = stazione;
+            stazione->successivo = curr->successivo;
+            curr->successivo = stazione;
+            stazione->precedente = curr;
+            printf("aggiunta\n");
+            return;
         }
         stazione->successivo = curr->successivo;
         curr->successivo = stazione;
         stazione->precedente = curr;
+        stazione->successivo->precedente = stazione;
 
         printf("aggiunta\n");
         /*aggiungi dal fondo*/
@@ -142,15 +148,21 @@ void aggiungiStazione(Stazione* stazione){
             coda->successivo = stazione;
             stazione->precedente = coda;
             coda = stazione;
-            printf("aggiunta");
+            printf("aggiunta\n");
             return;
         }
         if (testa == curr){
             testa = stazione;
+            stazione->precedente = curr->precedente;
+            curr->precedente = stazione;
+            stazione->successivo = curr;
+            printf("aggiunta\n");
+            return;
         }
         stazione->precedente = curr->precedente;
         curr->precedente = stazione;
-        stazione->successivo curr;
+        stazione->successivo = curr;
+        stazione->precedente->successivo = stazione;
         
         printf("aggiunta\n");
         /*aggiungi dalla testa*/
@@ -209,10 +221,6 @@ void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
                 printf("aggiunta\n");
                 return;
             }
-            if (temp->next->autonomia == autonomia){
-                printf("non aggiunta\n");
-                return;
-            }
             Auto* nuova_auto = creaAuto(autonomia);
             if (prev == NULL){
                 nuova_auto->next = temp;
@@ -225,6 +233,7 @@ void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
             printf("aggiunta\n");
             return;
         }
+        curr = curr->successivo;
     }
     printf("non aggiunta\n");
     return;
@@ -364,6 +373,7 @@ int main(){
             unsigned int partenza, arrivo;
             scanf("%d %d", &partenza, &arrivo);
             if(arrivo == partenza){
+                printf("%d\n", partenza);
                 /*percorso immediato*/
             }else if (partenza < arrivo)
             {
@@ -373,16 +383,15 @@ int main(){
                     start = start->successivo;
                 }
                 if (start == NULL){
-                    printf("percorso non trovato\n");
+                    printf("nessun percorso\n");
                 }else{
                 
                     Percorso* percorso = pianificaPercorso(start, arrivo, 0);
                     if (percorso != NULL){
-                        printf("percorso trovato: ");
                         stampaPercorso(percorso);
                     }else
                     {
-                        printf("percorso non trovato\n");
+                        printf("nessun percorso\n");
                     }
                 }
             }
