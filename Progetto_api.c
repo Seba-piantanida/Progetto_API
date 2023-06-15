@@ -284,10 +284,10 @@ Percorso* pianificaPercorso(Stazione* partenza, unsigned int arrivo, int index){
             return creaNodoPercorso(partenza->distanza, 0);
 
         }
-    Stazione* start = partenza;
+    Stazione* start = partenza->successivo;
     Percorso* percorso = NULL;
     unsigned int profondita = MAXINT;
-    while (start != NULL)
+    while (start != NULL && partenza->veicoli->autonomia >= (start->distanza - partenza->distanza))
     {
         
         Percorso* temp = pianificaPercorso(start, arrivo, index + 1);
@@ -351,13 +351,11 @@ int main(){
                 printf("non demolita\n");
             }
         }
-
         else if (!strcmp(stringa, "aggiungi-auto"))
         {
             scanf("%d %d", &stazione, &autonomia);
             aggiungiAuto(stazione, autonomia);
         }
-
         else if (!strcmp(stringa, "rottama-auto"))
         {
             scanf("%d %d", &stazione, &autonomia);
@@ -389,11 +387,15 @@ int main(){
                     Percorso* percorso = pianificaPercorso(start, arrivo, 0);
                     if (percorso != NULL){
                         stampaPercorso(percorso);
+                        printf("%d\n", arrivo);
                     }else
                     {
                         printf("nessun percorso\n");
                     }
                 }
+            }else{
+                /*percorso inverso*/
+                printf("non implementato\n");
             }
             
             dimPercorso = MAXINT;
