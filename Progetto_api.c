@@ -420,4 +420,6 @@ int main(){
         }
     }
     return 0;
+
 }
+/*funzia fino a 24*/
