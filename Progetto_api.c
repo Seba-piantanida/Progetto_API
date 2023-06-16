@@ -369,6 +369,9 @@ int main(){
         {
             read = scanf("%d %d", &stazione, &autonomia);
             aggiungiAuto(stazione, autonomia);
+            if (read < 0){
+                printf("errore");
+            }
         }
         else if (!strcmp(stringa, "rottama-auto"))
         {
