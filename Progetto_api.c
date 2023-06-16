@@ -183,43 +183,84 @@ int demolisciStazione(unsigned int distanza){
 }
 
 void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
-    Stazione* curr = testa;
-    if (cache != NULL && cache->distanza == stazione){
-        curr = cache;
-    }
-    while (curr != NULL){
-        if (curr->distanza == stazione){
-            Auto* prev = NULL;
-            Auto* temp = curr->veicoli;
-            cache = curr;
-
-            while (temp != NULL && temp->autonomia > autonomia)
-            {
-                prev = temp;
-                temp = temp->next; 
-            }
-            if (temp == NULL){
-                Auto* nuova_auto = creaAuto(autonomia);
-                curr->veicoli = nuova_auto;
-                printf("aggiunta\n");
-                return;
-            }
-            Auto* nuova_auto = creaAuto(autonomia);
-            if (prev == NULL){
-                nuova_auto->next = temp;
-                curr->veicoli = nuova_auto;
-                printf("aggiunta\n");
-                return;
-            }
-            prev->next = nuova_auto;
-            nuova_auto->next = temp;
-            printf("aggiunta\n");
-            return;
+    if (testa != NULL && stazione->distanza > (coda->distanza) / 2){
+         Stazione* curr = coda;
+        if (cache != NULL && cache->distanza == stazione){
+            curr = cache;
         }
-        curr = curr->successivo;
+        while (curr != NULL){
+            if (curr->distanza == stazione){
+                Auto* prev = NULL;
+                Auto* temp = curr->veicoli;
+                cache = curr;
+
+                while (temp != NULL && temp->autonomia > autonomia)
+                {
+                    prev = temp;
+                    temp = temp->next; 
+                }
+                if (temp == NULL){
+                    Auto* nuova_auto = creaAuto(autonomia);
+                    curr->veicoli = nuova_auto;
+                    printf("aggiunta\n");
+                    return;
+                }
+                Auto* nuova_auto = creaAuto(autonomia);
+                if (prev == NULL){
+                    nuova_auto->next = temp;
+                    curr->veicoli = nuova_auto;
+                    printf("aggiunta\n");
+                    return;
+                }
+                prev->next = nuova_auto;
+                nuova_auto->next = temp;
+                printf("aggiunta\n");
+                return;
+            }
+            curr = curr->precedente;
+        }
+        printf("non aggiunta\n");
+        return;
+
+    }else {
+        Stazione* curr = testa;
+        if (cache != NULL && cache->distanza == stazione){
+            curr = cache;
+        }
+        while (curr != NULL){
+            if (curr->distanza == stazione){
+                Auto* prev = NULL;
+                Auto* temp = curr->veicoli;
+                cache = curr;
+
+                while (temp != NULL && temp->autonomia > autonomia)
+                {
+                    prev = temp;
+                    temp = temp->next; 
+                }
+                if (temp == NULL){
+                    Auto* nuova_auto = creaAuto(autonomia);
+                    curr->veicoli = nuova_auto;
+                    printf("aggiunta\n");
+                    return;
+                }
+                Auto* nuova_auto = creaAuto(autonomia);
+                if (prev == NULL){
+                    nuova_auto->next = temp;
+                    curr->veicoli = nuova_auto;
+                    printf("aggiunta\n");
+                    return;
+                }
+                prev->next = nuova_auto;
+                nuova_auto->next = temp;
+                printf("aggiunta\n");
+                return;
+            }
+            curr = curr->successivo;
+        }
+        printf("non aggiunta\n");
+        return;
     }
-    printf("non aggiunta\n");
-    return;
 
 }
 
