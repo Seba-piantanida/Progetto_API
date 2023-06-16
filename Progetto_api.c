@@ -17,42 +17,21 @@ typedef struct Auto{
 
 typedef struct Stazione {
     unsigned int distanza;
+    unsigned int peso;
+    struct Stazione* prev;
     struct Auto* veicoli;
     struct Stazione* precedente;
     struct Stazione* successivo;
 } Stazione;
 
-typedef struct Percorso {
-    unsigned int distanza;
-    unsigned int profondita;
-    struct Percorso* next;
-} Percorso;
-
-void stampaPercorso(Percorso* percorso){
-    
-    while (percorso != NULL)
-    {
-        printf("%d ", percorso->distanza);
-        Percorso* prev = percorso;
-        percorso = percorso->next;
-        free(prev);
-    }
-    
-}
-
-Percorso* creaNodoPercorso(unsigned int distanza, unsigned int profondita){
-    Percorso* nuovoNodo = malloc(sizeof(Percorso));
-    nuovoNodo->distanza = distanza;
-    nuovoNodo->profondita = profondita;
-    nuovoNodo->next = NULL;
-    return nuovoNodo;
-}
 
 Stazione* testa = NULL;
 Stazione* coda = NULL;
 
 Stazione * creaStazione(unsigned int distanza){
     Stazione* nuova_stazione = malloc(sizeof(Stazione));
+    nuova_stazione->peso = MAXINT;
+    nuova_stazione->prev = NULL;
     nuova_stazione->veicoli = NULL;
     nuova_stazione->distanza = distanza;
     nuova_stazione->precedente = NULL;
@@ -273,47 +252,47 @@ int rottamaAuto(unsigned int stazione, unsigned int autonomia){
     return false;
 
 }
-
-Percorso* pianificaPercorso(Stazione* partenza, unsigned int arrivo, int index){
-    if(index >= dimPercorso){
-        return NULL;
+void reversePrint(Stazione* arrivo, Stazione* partenza){
+    if (arrivo->distanza != partenza->distanza){
+        reversePrint(arrivo->prev, partenza);
+        printf(" %d", arrivo->distanza );
+        return;
     }
-    if((partenza->distanza + partenza->veicoli->autonomia) >= arrivo){
-            /*trovato arrivo*/
-            dimPercorso = index;
-            return creaNodoPercorso(partenza->distanza, 0);
+    printf("%d", arrivo->distanza);
+    return;
+}
 
-        }
-    Stazione* start = partenza->successivo;
-    Percorso* percorso = NULL;
-    unsigned int profondita = MAXINT;
-    while (start != NULL && partenza->veicoli->autonomia >= (start->distanza - partenza->distanza))
+void pianificaPercorso(Stazione* partenza, unsigned int arrivo){
+    Stazione* currSta = partenza;
+    currSta->peso = 0;
+    while (currSta != NULL && currSta->distanza < arrivo)
     {
-        
-        Percorso* temp = pianificaPercorso(start, arrivo, index + 1);
-        if (temp != NULL && temp->profondita < profondita){
-            profondita = temp->profondita;
-            Percorso* nuovoNodo = creaNodoPercorso(partenza->distanza, profondita +1);
-            nuovoNodo->next = temp;
-            if (percorso == NULL){
-                percorso = nuovoNodo;
-            }else{
-                Percorso* prev = percorso;
-                temp = percorso;
-                while (temp != NULL){
-                    prev = temp;
-                    temp = temp->next;
-                    free(prev);
-                }
-                percorso = nuovoNodo;
+        Stazione* vSta = currSta->successivo;
+        while (vSta != NULL && ((currSta->veicoli->autonomia) >= (vSta->distanza - currSta->distanza)) && vSta->distanza <= arrivo)
+        {
+            if (vSta->peso > (currSta->peso + 1)){
+                vSta->peso = currSta->peso + 1;
+                vSta->prev = currSta;
             }
+            vSta = vSta->successivo;
         }
-
-        start = start->successivo;
+        
+        currSta = currSta->successivo;
     }
-    return percorso;
-    
-
+    if (currSta->peso >= MAXINT){
+        printf("nessun percorso\n");
+    }else{
+        reversePrint(currSta, partenza);
+        printf("\n");
+    }
+    currSta = partenza;
+    while (currSta != NULL && currSta->distanza <= arrivo)
+    {
+        currSta->peso = MAXINT;
+        currSta->prev = NULL;
+        currSta = currSta->successivo;
+    }
+    return;
 }
 
 
@@ -383,22 +362,12 @@ int main(){
                 if (start == NULL){
                     printf("nessun percorso\n");
                 }else{
-                
-                    Percorso* percorso = pianificaPercorso(start, arrivo, 0);
-                    if (percorso != NULL){
-                        stampaPercorso(percorso);
-                        printf("%d\n", arrivo);
-                    }else
-                    {
-                        printf("nessun percorso\n");
-                    }
+                    pianificaPercorso(start, arrivo);
                 }
             }else{
                 /*percorso inverso*/
                 printf("non implementato\n");
             }
-            
-            dimPercorso = MAXINT;
         }
         else
         {
