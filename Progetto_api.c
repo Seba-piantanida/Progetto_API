@@ -333,6 +333,7 @@ void pianificaPercorsoBW(Stazione* partenza, unsigned int arrivo){
 int main(){
     unsigned int stazione;
     unsigned int autonomia;
+    int read;
     char stringa[20];
     while (scanf("%19s", stringa) != EOF)
     {
@@ -342,12 +343,12 @@ int main(){
             int macchina;
             char temp;
 
-            scanf(" %d%c", &distanza, &temp);
+            read = scanf(" %d%c", &distanza, &temp);
             Stazione* nuova_stazione = creaStazione(distanza);
             Auto* primaAuto = NULL;
             if (temp != '\n'){
                     do{
-                        scanf("%d%c", &macchina, &temp);
+                        read = scanf("%d%c", &macchina, &temp);
                         primaAuto = creaListaAuto(primaAuto, macchina);
                     } while (temp != '\n');
             }
@@ -357,7 +358,7 @@ int main(){
         }
         else if (!strcmp(stringa, "demolisci-stazione"))
         {
-            scanf(" %d", &stazione);
+            read = scanf(" %d", &stazione);
             if (demolisciStazione(stazione)){
                 printf("demolita\n");
             }else{
@@ -366,12 +367,12 @@ int main(){
         }
         else if (!strcmp(stringa, "aggiungi-auto"))
         {
-            scanf("%d %d", &stazione, &autonomia);
+            read = scanf("%d %d", &stazione, &autonomia);
             aggiungiAuto(stazione, autonomia);
         }
         else if (!strcmp(stringa, "rottama-auto"))
         {
-            scanf("%d %d", &stazione, &autonomia);
+            read = scanf("%d %d", &stazione, &autonomia);
             if (rottamaAuto(stazione, autonomia)){
                 printf("rottamata\n");
             }else{
@@ -381,7 +382,7 @@ int main(){
         else if (!strcmp(stringa, "pianifica-percorso"))
         {
             unsigned int partenza, arrivo;
-            scanf("%d %d", &partenza, &arrivo);
+            read = scanf("%d %d", &partenza, &arrivo);
             if(arrivo == partenza){
                 printf("%d\n", partenza);
                 /*percorso immediato*/
