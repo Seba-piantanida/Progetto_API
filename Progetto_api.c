@@ -27,6 +27,7 @@ typedef struct Stazione {
 
 Stazione* testa = NULL;
 Stazione* coda = NULL;
+Stazione* cache = NULL;
 
 Stazione * creaStazione(unsigned int distanza){
     Stazione* nuova_stazione = malloc(sizeof(Stazione));
@@ -183,11 +184,14 @@ int demolisciStazione(unsigned int distanza){
 
 void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
     Stazione* curr = testa;
+    if (cache != NULL && cache->distanza == stazione){
+        curr = cache;
+    }
     while (curr != NULL){
         if (curr->distanza == stazione){
             Auto* prev = NULL;
             Auto* temp = curr->veicoli;
-
+            cache = curr;
 
             while (temp != NULL && temp->autonomia > autonomia)
             {
