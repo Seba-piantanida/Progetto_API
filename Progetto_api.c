@@ -295,6 +295,40 @@ void pianificaPercorso(Stazione* partenza, unsigned int arrivo){
     return;
 }
 
+void pianificaPercorsoBW(Stazione* partenza, unsigned int arrivo){
+    Stazione* currSta = partenza;
+    currSta->peso = 0;
+    while (currSta != NULL && currSta->distanza > arrivo)
+    {
+        Stazione* vSta = currSta->precedente;
+        while (vSta != NULL && ((currSta->veicoli->autonomia) >= (currSta->distanza - vSta->distanza)) && vSta->distanza >= arrivo)
+        {
+            if (vSta->peso >= (currSta->peso + 1)){
+                vSta->peso = currSta->peso + 1;
+                vSta->prev = currSta;
+            }
+            vSta = vSta->precedente;
+        }
+        
+        currSta = currSta->precedente;
+    }
+    if (currSta->peso >= MAXINT){
+        printf("nessun percorso\n");
+    }else{
+        reversePrint(currSta, partenza);
+        printf("\n");
+    }
+    currSta = partenza;
+    while (currSta != NULL && currSta->distanza >= arrivo)
+    {
+        currSta->peso = MAXINT;
+        currSta->prev = NULL;
+        currSta = currSta->precedente;
+    }
+    return;
+
+}
+
 
 int main(){
     unsigned int stazione;
@@ -344,7 +378,6 @@ int main(){
                 printf("non rottamata\n");
             }
         }
-
         else if (!strcmp(stringa, "pianifica-percorso"))
         {
             unsigned int partenza, arrivo;
@@ -365,16 +398,22 @@ int main(){
                     pianificaPercorso(start, arrivo);
                 }
             }else{
-                /*percorso inverso*/
-                printf("non implementato\n");
+                Stazione* start = coda;
+                while (start->distanza != partenza && start != NULL)
+                {
+                    start = start->precedente;
+                }
+                if (start == NULL){
+                    printf("nessun percorso\n");
+                }else{
+                    pianificaPercorsoBW(start, arrivo);
+                }
             }
         }
         else
         {
             return 0;
         }
-        
     }
-    
     return 0;
 }
