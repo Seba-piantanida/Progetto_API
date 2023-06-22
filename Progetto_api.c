@@ -16,6 +16,7 @@ typedef struct Auto{
 } Auto;
 
 typedef struct Stazione {
+    unsigned short int numAuto;
     unsigned int distanza;
     unsigned int peso;
     struct Stazione* prev;
@@ -31,6 +32,7 @@ Stazione* cache = NULL;
 
 Stazione * creaStazione(unsigned int distanza){
     Stazione* nuova_stazione = malloc(sizeof(Stazione));
+    nuova_stazione-> numAuto = 0;
     nuova_stazione->peso = MAXINT;
     nuova_stazione->prev = NULL;
     nuova_stazione->veicoli = NULL;
@@ -183,7 +185,7 @@ int demolisciStazione(unsigned int distanza){
 }
 
 void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
-    if (testa != NULL && stazione->distanza > (coda->distanza) / 2){
+    if (testa != NULL && (stazione > (coda->distanza) / 2)){
          Stazione* curr = coda;
         if (cache != NULL && cache->distanza == stazione){
             curr = cache;
@@ -193,6 +195,10 @@ void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
                 Auto* prev = NULL;
                 Auto* temp = curr->veicoli;
                 cache = curr;
+                if (curr ->numAuto >= 512){
+                    printf("non aggiunta\n");
+                    return;
+                }
 
                 while (temp != NULL && temp->autonomia > autonomia)
                 {
@@ -203,6 +209,7 @@ void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
                     Auto* nuova_auto = creaAuto(autonomia);
                     curr->veicoli = nuova_auto;
                     printf("aggiunta\n");
+                    curr->numAuto ++;
                     return;
                 }
                 Auto* nuova_auto = creaAuto(autonomia);
@@ -210,11 +217,13 @@ void aggiungiAuto(unsigned int stazione, unsigned int autonomia){
                     nuova_auto->next = temp;
                     curr->veicoli = nuova_auto;
                     printf("aggiunta\n");
+                    curr->numAuto ++;
                     return;
                 }
                 prev->next = nuova_auto;
                 nuova_auto->next = temp;
                 printf("aggiunta\n");
+                curr->numAuto ++;
                 return;
             }
             curr = curr->precedente;
@@ -279,6 +288,7 @@ int rottamaAuto(unsigned int stazione, unsigned int autonomia){
             if (temp->autonomia == autonomia){
                 curr->veicoli = curr->veicoli->next;
                 free(temp);
+                curr -> numAuto --;
                 return true;
             }
             Auto* prev = NULL;
@@ -286,6 +296,7 @@ int rottamaAuto(unsigned int stazione, unsigned int autonomia){
                 if (temp->autonomia == autonomia){
                     prev->next = temp->next;
                     free(temp);
+                    curr -> numAuto --;
                     return true;
                 }
                 prev = temp;
@@ -386,9 +397,10 @@ int main(){
         {
             int distanza;
             int macchina;
+            int numAuto;
             char temp;
 
-            read = scanf(" %d%c", &distanza, &temp);
+            read = scanf(" %d %d%c", &distanza, &numAuto, &temp);
             Stazione* nuova_stazione = creaStazione(distanza);
             Auto* primaAuto = NULL;
             if (temp != '\n'){
@@ -397,6 +409,7 @@ int main(){
                         primaAuto = creaListaAuto(primaAuto, macchina);
                     } while (temp != '\n');
             }
+            nuova_stazione -> numAuto = numAuto;
             nuova_stazione -> veicoli = primaAuto;
             aggiungiStazione(nuova_stazione);
 
